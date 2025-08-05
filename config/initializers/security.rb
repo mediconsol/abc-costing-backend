@@ -3,15 +3,8 @@
 
 Rails.application.configure do
   if Rails.env.production?
-    # Request security headers
-    config.force_ssl = true
-    config.ssl_options = {
-      hsts: {
-        expires: 1.year,
-        subdomains: true,
-        preload: true
-      }
-    }
+    # SSL handled by Railway - don't force SSL here
+    # config.force_ssl = true  # Disabled for Railway compatibility
 
     # Configure secure headers
     config.after_initialize do
@@ -45,62 +38,9 @@ Rails.application.configure do
       end
     end
 
-    # Rate limiting configuration
-    config.after_initialize do
-      # Simple in-memory rate limiting (consider Redis for production clusters)
-      @rate_limit_store = {}
-      @rate_limit_mutex = Mutex.new
-
-      # Add rate limiting middleware
-      Rails.application.middleware.insert_before ActionDispatch::Static, Class.new do
-        def initialize(app)
-          @app = app
-        end
-
-        def call(env)
-          request = Rack::Request.new(env)
-          
-          # Apply rate limiting to API endpoints
-          if request.path.start_with?('/api/')
-            client_ip = request.ip
-            
-            if rate_limited?(client_ip, request.path)
-              return [429, { 'Content-Type' => 'application/json' }, [
-                { error: 'Rate limit exceeded. Please try again later.' }.to_json
-              ]]
-            end
-          end
-          
-          @app.call(env)
-        end
-
-        private
-
-        def rate_limited?(ip, path)
-          Rails.application.instance_variable_get(:@rate_limit_mutex).synchronize do
-            store = Rails.application.instance_variable_get(:@rate_limit_store)
-            now = Time.current.to_i
-            key = "#{ip}:#{path}"
-            
-            # Clean old entries (older than 1 hour)
-            store.delete_if { |k, v| now - v[:first_request] > 3600 }
-            
-            # Initialize or update request count
-            if store[key]
-              store[key][:count] += 1
-              store[key][:last_request] = now
-            else
-              store[key] = { count: 1, first_request: now, last_request: now }
-            end
-            
-            # Rate limit: 100 requests per hour for calculation endpoints
-            limit = path.match?(/abc_calculations|reports\/export/) ? 20 : 100
-            
-            store[key][:count] > limit
-          end
-        end
-      end
-    end
+    # Rate limiting configuration - Disabled for Rails 8 compatibility
+    # TODO: Implement rate limiting at controller level or using rack-attack gem
+    # Middleware stack is frozen in Rails 8 during initialization
 
     # API Authentication security
     config.after_initialize do
@@ -196,24 +136,8 @@ Rails.application.configure do
       same_site: :strict,
       expire_after: 24.hours
 
-    # Configure CORS for API access
-    config.after_initialize do
-      if defined?(Rack::Cors)
-        Rails.application.config.middleware.insert_before 0, Rack::Cors do
-          allow do
-            # Configure allowed origins based on environment
-            allowed_origins = ENV['ALLOWED_ORIGINS']&.split(',') || ['https://yourdomain.com']
-            origins allowed_origins
-            
-            resource '/api/*',
-              headers: :any,
-              methods: [:get, :post, :put, :patch, :delete, :options, :head],
-              credentials: true,
-              max_age: 86400 # 24 hours
-          end
-        end
-      end
-    end
+    # CORS configuration - Handled in cors.rb initializer
+    # Middleware stack is frozen during initialization in Rails 8
 
     # File upload security for export downloads
     config.after_initialize do
