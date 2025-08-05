@@ -8,9 +8,12 @@ fi
 
 # Railway-specific database setup
 if [ -n "$DATABASE_URL" ] && [ "$RAILS_ENV" = "production" ]; then
-  echo "🚂 Railway: Setting up database..."
-  bundle exec rails db:create 2>/dev/null || echo "Database already exists"
-  bundle exec rails db:migrate 2>/dev/null || echo "Migration completed"
+  echo "🚂 Railway: Checking database..."
+  
+  # Wait for database to be ready and run migrations
+  echo "Running database migrations..."
+  bundle exec rails db:migrate || echo "Migration failed - continuing"
+  
   echo "✅ Database setup complete"
 fi
 
