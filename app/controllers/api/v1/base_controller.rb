@@ -1,7 +1,4 @@
 class Api::V1::BaseController < ApplicationController
-  # CSRF protection 비활성화 (API 전용)
-  skip_before_action :verify_authenticity_token
-  
   # JSON 응답만 허용
   before_action :ensure_json_request
   
