@@ -1,6 +1,5 @@
-class Api::V1::AuthController < Api::V1::BaseController
+class Api::V1::AuthController < ApplicationController
   skip_before_action :authenticate_user!, only: [:login, :signup]
-  skip_before_action :ensure_json_request, only: [:login, :signup]
   
   # POST /api/v1/auth/login
   def login
