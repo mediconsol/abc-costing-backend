@@ -249,13 +249,13 @@ if Rails.env.production?
   log_dir = Rails.root.join('log')
   FileUtils.mkdir_p(log_dir) unless Dir.exist?(log_dir)
   
-  # Custom log formatting for better parsing
-  class CustomLogFormatter < Logger::Formatter
-    def call(severity, time, progname, msg)
-      "[#{time.iso8601}] #{severity.ljust(5)} #{progname}: #{msg}\n"
-    end
-  end
+  # Custom log formatting for better parsing - Disabled for Rails 8 compatibility
+  # class CustomLogFormatter < Logger::Formatter
+  #   def call(severity, time, progname, msg)
+  #     "[#{time.iso8601}] #{severity.ljust(5)} #{progname}: #{msg}\n"
+  #   end
+  # end
   
-  # Apply custom formatter
-  Rails.logger.formatter = CustomLogFormatter.new if Rails.logger.respond_to?(:formatter=)
+  # Apply custom formatter - Disabled for Rails 8 compatibility
+  # Rails.logger.formatter = CustomLogFormatter.new if Rails.logger.respond_to?(:formatter=)
 end
