@@ -1,6 +1,23 @@
 class Api::V1::AuthController < ApplicationController
   skip_before_action :authenticate_user!, only: [:login, :signup]
   
+  # Helper methods from BaseController
+  def render_success(data = nil, message = nil, status = :ok)
+    response = { success: true }
+    response[:data] = data if data
+    response[:message] = message if message
+    render json: response, status: status
+  end
+  
+  def render_error(message, status = :unprocessable_entity, errors = nil)
+    response = { 
+      success: false, 
+      message: message 
+    }
+    response[:errors] = errors if errors
+    render json: response, status: status
+  end
+  
   # POST /api/v1/auth/login
   def login
     user = User.find_by(email: login_params[:email])
