@@ -2,10 +2,9 @@
 
 Devise.setup do |config|
   config.jwt do |jwt|
-    # 환경변수에서 JWT 시크릿 키 가져오기
-    jwt_secret = ENV['DEVISE_JWT_SECRET_KEY'] || Rails.application.credentials.devise_jwt_secret_key || Rails.application.secret_key_base
+    # Devise JWT는 16바이트 키를 요구하므로 SECRET_KEY_BASE의 첫 16바이트 사용
+    jwt.secret = Rails.application.secret_key_base[0, 16]
     
-    jwt.secret = jwt_secret
     jwt.dispatch_requests = [
       ['POST', %r{^/api/v1/auth/login$}]
     ]
