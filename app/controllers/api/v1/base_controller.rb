@@ -32,7 +32,12 @@ class Api::V1::BaseController < ApplicationController
   private
   
   def ensure_json_request
-    return if request.content_type =~ /application\/json/ || request.get?
+    # Allow GET requests and requests with JSON content type
+    return if request.get? || request.content_type&.include?('application/json')
+    
+    # Also allow common content types for API requests
+    return if request.content_type&.include?('application/x-www-form-urlencoded')
+    
     render json: { error: 'Content-Type must be application/json' }, status: :unsupported_media_type
   end
   
