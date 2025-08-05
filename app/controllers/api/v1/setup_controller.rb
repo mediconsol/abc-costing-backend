@@ -33,8 +33,7 @@ class Api::V1::SetupController < ApplicationController
         name: "2025년 1분기",
         start_date: Date.new(2025, 1, 1),
         end_date: Date.new(2025, 3, 31),
-        is_active: true,
-        status: "planning"
+        is_active: true
       )
       
       render json: {
