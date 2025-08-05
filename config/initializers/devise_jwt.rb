@@ -3,6 +3,7 @@
 Devise.setup do |config|
   config.jwt do |jwt|
     # Devise JWT는 16바이트 키를 요구하므로 SECRET_KEY_BASE의 첫 16바이트 사용
+    # Railway 배포를 위한 수정 - 2025-08-05
     jwt.secret = Rails.application.secret_key_base[0, 16]
     
     jwt.dispatch_requests = [
