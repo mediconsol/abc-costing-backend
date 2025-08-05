@@ -15,7 +15,7 @@ if [ -n "$DATABASE_URL" ] && [ "$RAILS_ENV" = "production" ]; then
 fi
 
 # If running the rails server then prepare database (development/test)
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ] && [ "$RAILS_ENV" != "production" ]; then
+if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ] && [ "$RAILS_ENV" != "production" ]; then
   ./bin/rails db:prepare
 fi
 

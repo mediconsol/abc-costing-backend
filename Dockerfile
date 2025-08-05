@@ -69,4 +69,4 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Railway uses PORT environment variable
 EXPOSE $PORT
-CMD ["./bin/rails", "server", "-p", "$PORT", "-b", "0.0.0.0"]
+CMD ["sh", "-c", "./bin/rails server -p ${PORT:-3000} -b 0.0.0.0"]
