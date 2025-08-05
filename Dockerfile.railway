@@ -1,0 +1,74 @@
+# Railway 최적화 Dockerfile for ABC Costing Backend
+FROM ruby:3.3.7-slim
+
+# Railway 환경 변수
+ENV RAILS_ENV=production \
+    BUNDLE_DEPLOYMENT=1 \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="development test" \
+    RAILS_LOG_TO_STDOUT=true \
+    RAILS_SERVE_STATIC_FILES=true
+
+# 작업 디렉토리 설정
+WORKDIR /rails
+
+# 시스템 패키지 설치
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+    build-essential \
+    git \
+    libpq-dev \
+    libyaml-dev \
+    pkg-config \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Bundler 최신 버전 설치
+RUN gem update --system --no-document && \
+    gem install bundler --no-document
+
+# Gemfile 복사 및 의존성 설치
+COPY Gemfile Gemfile.lock ./
+RUN bundle install && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
+    bundle exec bootsnap precompile --gemfile
+
+# 애플리케이션 코드 복사
+COPY . .
+
+# 부트스냅 프리컴파일
+RUN bundle exec bootsnap precompile app/ lib/
+
+# 바이너리 파일 실행 권한 설정
+RUN chmod +x bin/* && \
+    sed -i "s/\r$//g" bin/* && \
+    sed -i 's/ruby\.exe$/ruby/' bin/*
+
+# 필요한 디렉토리 생성
+RUN mkdir -p tmp/exports log storage && \
+    chmod -R 755 tmp log storage
+
+# Railway 포트 환경변수 사용
+EXPOSE $PORT
+
+# Railway 엔트리포인트
+COPY <<EOF /rails/bin/railway-entrypoint
+#!/bin/bash
+set -e
+
+# 데이터베이스 마이그레이션 (첫 배포시)
+if [ -n "\$DATABASE_URL" ]; then
+  echo "Running database migrations..."
+  bundle exec rails db:migrate 2>/dev/null || echo "Migration skipped or failed"
+fi
+
+# 애플리케이션 시작
+exec "\$@"
+EOF
+
+RUN chmod +x /rails/bin/railway-entrypoint
+
+# Railway용 시작 명령
+ENTRYPOINT ["/rails/bin/railway-entrypoint"]
+CMD ["bundle", "exec", "rails", "server", "-p", "$PORT", "-b", "0.0.0.0"]

@@ -1,0 +1,690 @@
+  [1m[35m (331.3ms)[0m  [1m[35mCREATE DATABASE "abc_costing_backend_development" ENCODING = 'unicode' /*application='AbcCostingBackend'*/[0m
+  [1m[35m (324.2ms)[0m  [1m[35mCREATE DATABASE "abc_costing_backend_test" ENCODING = 'unicode' /*application='AbcCostingBackend'*/[0m
+  [1m[35m (71.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2025-08-05 01:14:44.281309', '2025-08-05 01:14:44.281312') RETURNING "key" /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+Migrating to EnableUuidExtension (20250805004943)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (1.9ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805004943') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+Migrating to CreateHospitals (20250805005019)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (11.0ms)[0m  [1m[35mCREATE TABLE "hospitals" ("id" varchar NOT NULL PRIMARY KEY, "name" varchar NOT NULL, "address" text, "phone" varchar, "hospital_type" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_hospitals_on_name" ON "hospitals" ("name") /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805005019') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+Migrating to CreatePeriods (20250805005205)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.0ms)[0m  [1m[35mCREATE TABLE "periods" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "name" varchar NOT NULL, "start_date" date NOT NULL, "end_date" date NOT NULL, "is_active" boolean DEFAULT 0, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_periods_on_hospital_id_and_name" ON "periods" ("hospital_id", "name") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_periods_on_hospital_id_and_is_active" ON "periods" ("hospital_id", "is_active") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.9ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aperiods" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "name" varchar NOT NULL, "start_date" date NOT NULL, "end_date" date NOT NULL, "is_active" boolean DEFAULT 0, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aperiods_on_hospital_id_and_is_active" ON "aperiods" ("hospital_id", "is_active") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aperiods_on_hospital_id_and_name" ON "aperiods" ("hospital_id", "name") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aperiods" ("id","hospital_id","name","start_date","end_date","is_active","created_at","updated_at")
+                     SELECT "id","hospital_id","name","start_date","end_date","is_active","created_at","updated_at" FROM "periods" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "periods" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "periods" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "name" varchar NOT NULL, "start_date" date NOT NULL, "end_date" date NOT NULL, "is_active" boolean DEFAULT 0, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_07cf99182a"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_periods_on_hospital_id_and_name" ON "periods" ("hospital_id", "name") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_periods_on_hospital_id_and_is_active" ON "periods" ("hospital_id", "is_active") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "periods" ("id","hospital_id","name","start_date","end_date","is_active","created_at","updated_at")
+                     SELECT "id","hospital_id","name","start_date","end_date","is_active","created_at","updated_at" FROM "aperiods" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "aperiods" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805005205') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+Migrating to CreateDepartments (20250805005535)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.0ms)[0m  [1m[35mCREATE TABLE "departments" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "parent_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "department_type" varchar NOT NULL, "manager" varchar, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_departments_on_hospital_id_and_period_id_and_code" ON "departments" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_departments_on_hospital_id_and_period_id" ON "departments" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_departments_on_department_type" ON "departments" ("department_type") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "adepartments" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "parent_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "department_type" varchar NOT NULL, "manager" varchar, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_adepartments_on_department_type" ON "adepartments" ("department_type") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_adepartments_on_hospital_id_and_period_id" ON "adepartments" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_adepartments_on_hospital_id_and_period_id_and_code" ON "adepartments" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "adepartments" ("id","hospital_id","period_id","parent_id","code","name","department_type","manager","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","parent_id","code","name","department_type","manager","description","created_at","updated_at" FROM "departments" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "departments" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "departments" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "parent_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "department_type" varchar NOT NULL, "manager" varchar, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_83184f1236"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_departments_on_hospital_id_and_period_id_and_code" ON "departments" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_departments_on_hospital_id_and_period_id" ON "departments" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_departments_on_department_type" ON "departments" ("department_type") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "departments" ("id","hospital_id","period_id","parent_id","code","name","department_type","manager","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","parent_id","code","name","department_type","manager","description","created_at","updated_at" FROM "adepartments" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "adepartments" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "adepartments" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "parent_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "department_type" varchar NOT NULL, "manager" varchar, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_adepartments_on_department_type" ON "adepartments" ("department_type") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_adepartments_on_hospital_id_and_period_id" ON "adepartments" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_adepartments_on_hospital_id_and_period_id_and_code" ON "adepartments" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "adepartments" ("id","hospital_id","period_id","parent_id","code","name","department_type","manager","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","parent_id","code","name","department_type","manager","description","created_at","updated_at" FROM "departments" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "departments" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "departments" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "parent_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "department_type" varchar NOT NULL, "manager" varchar, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_83184f1236"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+, CONSTRAINT "fk_rails_e184750c84"
+FOREIGN KEY ("period_id")
+  REFERENCES "periods" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_departments_on_hospital_id_and_period_id_and_code" ON "departments" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_departments_on_hospital_id_and_period_id" ON "departments" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_departments_on_department_type" ON "departments" ("department_type") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "departments" ("id","hospital_id","period_id","parent_id","code","name","department_type","manager","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","parent_id","code","name","department_type","manager","description","created_at","updated_at" FROM "adepartments" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "adepartments" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "adepartments" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "parent_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "department_type" varchar NOT NULL, "manager" varchar, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_adepartments_on_department_type" ON "adepartments" ("department_type") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_adepartments_on_hospital_id_and_period_id" ON "adepartments" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_adepartments_on_hospital_id_and_period_id_and_code" ON "adepartments" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "adepartments" ("id","hospital_id","period_id","parent_id","code","name","department_type","manager","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","parent_id","code","name","department_type","manager","description","created_at","updated_at" FROM "departments" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "departments" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "departments" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "parent_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "department_type" varchar NOT NULL, "manager" varchar, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_e184750c84"
+FOREIGN KEY ("period_id")
+  REFERENCES "periods" ("id")
+, CONSTRAINT "fk_rails_83184f1236"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+, CONSTRAINT "fk_rails_8e1e5764fc"
+FOREIGN KEY ("parent_id")
+  REFERENCES "departments" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_departments_on_hospital_id_and_period_id_and_code" ON "departments" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_departments_on_hospital_id_and_period_id" ON "departments" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_departments_on_department_type" ON "departments" ("department_type") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "departments" ("id","hospital_id","period_id","parent_id","code","name","department_type","manager","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","parent_id","code","name","department_type","manager","description","created_at","updated_at" FROM "adepartments" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "adepartments" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805005535') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+Migrating to CreateAccounts (20250805005947)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (1.9ms)[0m  [1m[35mCREATE TABLE "accounts" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "code" varchar NOT NULL, "name" varchar NOT NULL, "category" varchar NOT NULL, "is_direct" boolean DEFAULT 0, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_on_hospital_id_and_period_id_and_code" ON "accounts" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_hospital_id_and_period_id" ON "accounts" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_category" ON "accounts" ("category") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_is_direct" ON "accounts" ("is_direct") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aaccounts" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "code" varchar NOT NULL, "name" varchar NOT NULL, "category" varchar NOT NULL, "is_direct" boolean DEFAULT 0, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aaccounts_on_is_direct" ON "aaccounts" ("is_direct") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aaccounts_on_category" ON "aaccounts" ("category") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aaccounts_on_hospital_id_and_period_id" ON "aaccounts" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aaccounts_on_hospital_id_and_period_id_and_code" ON "aaccounts" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aaccounts" ("id","hospital_id","period_id","code","name","category","is_direct","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","code","name","category","is_direct","description","created_at","updated_at" FROM "accounts" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "accounts" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "accounts" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "code" varchar NOT NULL, "name" varchar NOT NULL, "category" varchar NOT NULL, "is_direct" boolean DEFAULT 0, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_73545b1f49"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_on_hospital_id_and_period_id_and_code" ON "accounts" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_hospital_id_and_period_id" ON "accounts" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_category" ON "accounts" ("category") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_is_direct" ON "accounts" ("is_direct") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "accounts" ("id","hospital_id","period_id","code","name","category","is_direct","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","code","name","category","is_direct","description","created_at","updated_at" FROM "aaccounts" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.5ms)[0m  [1m[35mDROP TABLE "aaccounts" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aaccounts" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "code" varchar NOT NULL, "name" varchar NOT NULL, "category" varchar NOT NULL, "is_direct" boolean DEFAULT 0, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aaccounts_on_is_direct" ON "aaccounts" ("is_direct") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aaccounts_on_category" ON "aaccounts" ("category") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aaccounts_on_hospital_id_and_period_id" ON "aaccounts" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aaccounts_on_hospital_id_and_period_id_and_code" ON "aaccounts" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aaccounts" ("id","hospital_id","period_id","code","name","category","is_direct","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","code","name","category","is_direct","description","created_at","updated_at" FROM "accounts" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "accounts" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "accounts" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "code" varchar NOT NULL, "name" varchar NOT NULL, "category" varchar NOT NULL, "is_direct" boolean DEFAULT 0, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_73545b1f49"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+, CONSTRAINT "fk_rails_73a434a6ad"
+FOREIGN KEY ("period_id")
+  REFERENCES "periods" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_on_hospital_id_and_period_id_and_code" ON "accounts" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_hospital_id_and_period_id" ON "accounts" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_category" ON "accounts" ("category") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_is_direct" ON "accounts" ("is_direct") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "accounts" ("id","hospital_id","period_id","code","name","category","is_direct","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","code","name","category","is_direct","description","created_at","updated_at" FROM "aaccounts" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "aaccounts" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805005947') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+Migrating to CreateActivities (20250805010146)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.0ms)[0m  [1m[35mCREATE TABLE "activities" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "department_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "category" varchar NOT NULL, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_activities_on_hospital_id_and_period_id_and_code" ON "activities" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activities_on_hospital_id_and_period_id" ON "activities" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activities_on_category" ON "activities" ("category") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aactivities" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "department_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "category" varchar NOT NULL, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aactivities_on_category" ON "aactivities" ("category") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aactivities_on_hospital_id_and_period_id" ON "aactivities" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aactivities_on_hospital_id_and_period_id_and_code" ON "aactivities" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aactivities" ("id","hospital_id","period_id","department_id","code","name","category","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","department_id","code","name","category","description","created_at","updated_at" FROM "activities" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "activities" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "activities" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "department_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "category" varchar NOT NULL, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_b736d37611"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_activities_on_hospital_id_and_period_id_and_code" ON "activities" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activities_on_hospital_id_and_period_id" ON "activities" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activities_on_category" ON "activities" ("category") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "activities" ("id","hospital_id","period_id","department_id","code","name","category","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","department_id","code","name","category","description","created_at","updated_at" FROM "aactivities" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "aactivities" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aactivities" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "department_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "category" varchar NOT NULL, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aactivities_on_category" ON "aactivities" ("category") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aactivities_on_hospital_id_and_period_id" ON "aactivities" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aactivities_on_hospital_id_and_period_id_and_code" ON "aactivities" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aactivities" ("id","hospital_id","period_id","department_id","code","name","category","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","department_id","code","name","category","description","created_at","updated_at" FROM "activities" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "activities" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "activities" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "department_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "category" varchar NOT NULL, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_b736d37611"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+, CONSTRAINT "fk_rails_d5f32d0b49"
+FOREIGN KEY ("period_id")
+  REFERENCES "periods" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_activities_on_hospital_id_and_period_id_and_code" ON "activities" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activities_on_hospital_id_and_period_id" ON "activities" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activities_on_category" ON "activities" ("category") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "activities" ("id","hospital_id","period_id","department_id","code","name","category","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","department_id","code","name","category","description","created_at","updated_at" FROM "aactivities" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "aactivities" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aactivities" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "department_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "category" varchar NOT NULL, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aactivities_on_category" ON "aactivities" ("category") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aactivities_on_hospital_id_and_period_id" ON "aactivities" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aactivities_on_hospital_id_and_period_id_and_code" ON "aactivities" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aactivities" ("id","hospital_id","period_id","department_id","code","name","category","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","department_id","code","name","category","description","created_at","updated_at" FROM "activities" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "activities" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "activities" ("id" varchar NOT NULL PRIMARY KEY, "hospital_id" varchar NOT NULL, "period_id" varchar NOT NULL, "department_id" varchar, "code" varchar NOT NULL, "name" varchar NOT NULL, "category" varchar NOT NULL, "description" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_d5f32d0b49"
+FOREIGN KEY ("period_id")
+  REFERENCES "periods" ("id")
+, CONSTRAINT "fk_rails_b736d37611"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+, CONSTRAINT "fk_rails_48db5e2b39"
+FOREIGN KEY ("department_id")
+  REFERENCES "departments" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_activities_on_hospital_id_and_period_id_and_code" ON "activities" ("hospital_id", "period_id", "code") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activities_on_hospital_id_and_period_id" ON "activities" ("hospital_id", "period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activities_on_category" ON "activities" ("category") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "activities" ("id","hospital_id","period_id","department_id","code","name","category","description","created_at","updated_at")
+                     SELECT "id","hospital_id","period_id","department_id","code","name","category","description","created_at","updated_at" FROM "aactivities" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "aactivities" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805010146') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+Migrating to DeviseCreateUsers (20250805011730)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.2ms)[0m  [1m[35mCREATE TABLE "users" ("id" varchar NOT NULL PRIMARY KEY, "email" varchar DEFAULT '' NOT NULL, "encrypted_password" varchar DEFAULT '' NOT NULL, "name" varchar NOT NULL, "reset_password_token" varchar, "reset_password_sent_at" datetime(6), "remember_created_at" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_reset_password_token" ON "users" ("reset_password_token") /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805011730') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (61.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+Migrating to CreateHospitalUsers (20250805011818)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.0ms)[0m  [1m[35mCREATE TABLE "hospital_users" ("id" varchar NOT NULL PRIMARY KEY, "user_id" varchar NOT NULL, "hospital_id" varchar NOT NULL, "role" varchar DEFAULT 'viewer' NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_hospital_users_on_user_id_and_hospital_id" ON "hospital_users" ("user_id", "hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_hospital_users_on_user_id" ON "hospital_users" ("user_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_hospital_users_on_hospital_id" ON "hospital_users" ("hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_hospital_users_on_role" ON "hospital_users" ("role") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "ahospital_users" ("id" varchar NOT NULL PRIMARY KEY, "user_id" varchar NOT NULL, "hospital_id" varchar NOT NULL, "role" varchar DEFAULT 'viewer' NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_ahospital_users_on_role" ON "ahospital_users" ("role") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_ahospital_users_on_hospital_id" ON "ahospital_users" ("hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "tindex_ahospital_users_on_user_id" ON "ahospital_users" ("user_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_ahospital_users_on_user_id_and_hospital_id" ON "ahospital_users" ("user_id", "hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "ahospital_users" ("id","user_id","hospital_id","role","created_at","updated_at")
+                     SELECT "id","user_id","hospital_id","role","created_at","updated_at" FROM "hospital_users" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "hospital_users" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "hospital_users" ("id" varchar NOT NULL PRIMARY KEY, "user_id" varchar NOT NULL, "hospital_id" varchar NOT NULL, "role" varchar DEFAULT 'viewer' NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_aff6f3d838"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_hospital_users_on_user_id_and_hospital_id" ON "hospital_users" ("user_id", "hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_hospital_users_on_user_id" ON "hospital_users" ("user_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_hospital_users_on_hospital_id" ON "hospital_users" ("hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_hospital_users_on_role" ON "hospital_users" ("role") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "hospital_users" ("id","user_id","hospital_id","role","created_at","updated_at")
+                     SELECT "id","user_id","hospital_id","role","created_at","updated_at" FROM "ahospital_users" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "ahospital_users" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "ahospital_users" ("id" varchar NOT NULL PRIMARY KEY, "user_id" varchar NOT NULL, "hospital_id" varchar NOT NULL, "role" varchar DEFAULT 'viewer' NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_ahospital_users_on_role" ON "ahospital_users" ("role") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_ahospital_users_on_hospital_id" ON "ahospital_users" ("hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_ahospital_users_on_user_id" ON "ahospital_users" ("user_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_ahospital_users_on_user_id_and_hospital_id" ON "ahospital_users" ("user_id", "hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "ahospital_users" ("id","user_id","hospital_id","role","created_at","updated_at")
+                     SELECT "id","user_id","hospital_id","role","created_at","updated_at" FROM "hospital_users" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.5ms)[0m  [1m[35mDROP TABLE "hospital_users" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "hospital_users" ("id" varchar NOT NULL PRIMARY KEY, "user_id" varchar NOT NULL, "hospital_id" varchar NOT NULL, "role" varchar DEFAULT 'viewer' NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_aff6f3d838"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_676fffb39b"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_hospital_users_on_user_id_and_hospital_id" ON "hospital_users" ("user_id", "hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_hospital_users_on_user_id" ON "hospital_users" ("user_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_hospital_users_on_hospital_id" ON "hospital_users" ("hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_hospital_users_on_role" ON "hospital_users" ("role") /*application='AbcCostingBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "hospital_users" ("id","user_id","hospital_id","role","created_at","updated_at")
+                     SELECT "id","user_id","hospital_id","role","created_at","updated_at" FROM "ahospital_users" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "ahospital_users" /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805011818') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+Migrating to CreateJwtDenylists (20250805012149)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.1ms)[0m  [1m[35mCREATE TABLE "jwt_denylists" ("id" varchar NOT NULL PRIMARY KEY, "jti" varchar NOT NULL, "exp" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_jwt_denylists_on_jti" ON "jwt_denylists" ("jti") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_jwt_denylists_on_exp" ON "jwt_denylists" ("exp") /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805012149') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+  [1m[36mHospital Load (0.1ms)[0m  [1m[34mSELECT "hospitals".* FROM "hospitals" WHERE "hospitals"."name" = '서울대학교병원' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mHospital Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "hospitals" WHERE "hospitals"."name" = '서울대학교병원' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mHospital Create (0.2ms)[0m  [1m[32mINSERT INTO "hospitals" ("id", "name", "address", "phone", "hospital_type", "created_at", "updated_at") VALUES ('67ea0003-b267-43de-bf2d-7a017e4f7d42', '서울대학교병원', '서울특별시 종로구 대학로 101', '02-2072-2114', 'general_hospital', '2025-08-05 01:33:34.829218', '2025-08-05 01:33:34.829218') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (54.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'admin@hospital.com' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mUser Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'admin@hospital.com' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mUser Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER('admin@hospital.com') LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mUser Create (0.1ms)[0m  [1m[32mINSERT INTO "users" ("id", "email", "encrypted_password", "name", "reset_password_token", "reset_password_sent_at", "remember_created_at", "created_at", "updated_at") VALUES ('8cc4ba05-c6c5-4ad6-8c30-33219aadf271', 'admin@hospital.com', '$2a$12$nrSUO5l0DUquxGCfo.0qZOG3yQjKfVOS0yWHUtOjWeVfpagd0aL.y', '시스템 관리자', NULL, NULL, NULL, '2025-08-05 01:33:35.141961', '2025-08-05 01:33:35.141961') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'manager@hospital.com' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mUser Exists? (2.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'manager@hospital.com' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mUser Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER('manager@hospital.com') LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mUser Create (0.1ms)[0m  [1m[32mINSERT INTO "users" ("id", "email", "encrypted_password", "name", "reset_password_token", "reset_password_sent_at", "remember_created_at", "created_at", "updated_at") VALUES ('67536720-4324-489c-b717-590901ce424e', 'manager@hospital.com', '$2a$12$hlhrT2YQJBjDm/pAVZRoH.qF0rbfIYMw6q5i6kUwFoFTtBfNIy.n6', '원가관리자', NULL, NULL, NULL, '2025-08-05 01:33:35.320929', '2025-08-05 01:33:35.320929') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'viewer@hospital.com' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mUser Exists? (2.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'viewer@hospital.com' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mUser Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER('viewer@hospital.com') LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mUser Create (0.1ms)[0m  [1m[32mINSERT INTO "users" ("id", "email", "encrypted_password", "name", "reset_password_token", "reset_password_sent_at", "remember_created_at", "created_at", "updated_at") VALUES ('4dabbc5a-c473-4965-a3f5-e3344c7358d0', 'viewer@hospital.com', '$2a$12$nYD9d/z5.UPskBXNYSdEIuHIKXhtW6PSchLWpEUtNw7QwQ1hskzzW', '조회자', NULL, NULL, NULL, '2025-08-05 01:33:35.498057', '2025-08-05 01:33:35.498057') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mHospitalUser Load (0.1ms)[0m  [1m[34mSELECT "hospital_users".* FROM "hospital_users" WHERE "hospital_users"."user_id" = '8cc4ba05-c6c5-4ad6-8c30-33219aadf271' AND "hospital_users"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mHospitalUser Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "hospital_users" WHERE "hospital_users"."user_id" = '8cc4ba05-c6c5-4ad6-8c30-33219aadf271' AND "hospital_users"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mHospitalUser Create (0.1ms)[0m  [1m[32mINSERT INTO "hospital_users" ("id", "user_id", "hospital_id", "role", "created_at", "updated_at") VALUES ('81cbf6d8-0c35-4301-9a68-83ce99e43714', '8cc4ba05-c6c5-4ad6-8c30-33219aadf271', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'admin', '2025-08-05 01:33:35.568794', '2025-08-05 01:33:35.568794') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mHospitalUser Load (0.1ms)[0m  [1m[34mSELECT "hospital_users".* FROM "hospital_users" WHERE "hospital_users"."user_id" = '67536720-4324-489c-b717-590901ce424e' AND "hospital_users"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mHospitalUser Exists? (2.6ms)[0m  [1m[34mSELECT 1 AS one FROM "hospital_users" WHERE "hospital_users"."user_id" = '67536720-4324-489c-b717-590901ce424e' AND "hospital_users"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mHospitalUser Create (0.1ms)[0m  [1m[32mINSERT INTO "hospital_users" ("id", "user_id", "hospital_id", "role", "created_at", "updated_at") VALUES ('bcf04ef6-2f95-4184-afb6-8cf4e4f4c71b', '67536720-4324-489c-b717-590901ce424e', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'manager', '2025-08-05 01:33:35.580972', '2025-08-05 01:33:35.580972') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mHospitalUser Load (0.1ms)[0m  [1m[34mSELECT "hospital_users".* FROM "hospital_users" WHERE "hospital_users"."user_id" = '4dabbc5a-c473-4965-a3f5-e3344c7358d0' AND "hospital_users"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mHospitalUser Exists? (2.8ms)[0m  [1m[34mSELECT 1 AS one FROM "hospital_users" WHERE "hospital_users"."user_id" = '4dabbc5a-c473-4965-a3f5-e3344c7358d0' AND "hospital_users"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mHospitalUser Create (0.1ms)[0m  [1m[32mINSERT INTO "hospital_users" ("id", "user_id", "hospital_id", "role", "created_at", "updated_at") VALUES ('1222683b-62c5-4dcb-b2bf-23000b2f7cd0', '4dabbc5a-c473-4965-a3f5-e3344c7358d0', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'viewer', '2025-08-05 01:33:35.593139', '2025-08-05 01:33:35.593139') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mPeriod Load (0.1ms)[0m  [1m[34mSELECT "periods".* FROM "periods" WHERE "periods"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "periods"."name" = '2024년 하반기' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mPeriod Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "periods" WHERE "periods"."name" = '2024년 하반기' AND "periods"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mPeriod Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "periods" WHERE "periods"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "periods"."is_active" = 1 LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  ↳ app/models/period.rb:63:in `only_one_active_per_hospital'
+  [1m[36mPeriod Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "periods" WHERE "periods"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "periods"."id" IS NOT NULL AND (start_date <= '2024-12-31' AND end_date >= '2024-07-01') LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  ↳ app/models/period.rb:74:in `date_range_not_overlap'
+  [1m[36mPeriod Create (0.1ms)[0m  [1m[32mINSERT INTO "periods" ("id", "hospital_id", "name", "start_date", "end_date", "is_active", "created_at", "updated_at") VALUES ('ad036f4d-da64-44cf-aa3a-f7f67618271b', '67ea0003-b267-43de-bf2d-7a017e4f7d42', '2024년 하반기', '2024-07-01', '2024-12-31', 1, '2025-08-05 01:33:35.664020', '2025-08-05 01:33:35.664020') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Load (0.1ms)[0m  [1m[34mSELECT "departments".* FROM "departments" WHERE "departments"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "departments"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "departments"."code" = 'D001' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "departments" WHERE "departments"."code" = 'D001' AND "departments"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "departments"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Create (0.1ms)[0m  [1m[32mINSERT INTO "departments" ("id", "hospital_id", "period_id", "parent_id", "code", "name", "department_type", "manager", "description", "created_at", "updated_at") VALUES ('9094244f-b3e5-4567-8bf1-b674e3ec2203', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', NULL, 'D001', '내과', 'direct', NULL, NULL, '2025-08-05 01:33:35.701658', '2025-08-05 01:33:35.701658') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Load (0.1ms)[0m  [1m[34mSELECT "departments".* FROM "departments" WHERE "departments"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "departments"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "departments"."code" = 'D002' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Exists? (2.7ms)[0m  [1m[34mSELECT 1 AS one FROM "departments" WHERE "departments"."code" = 'D002' AND "departments"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "departments"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Create (0.1ms)[0m  [1m[32mINSERT INTO "departments" ("id", "hospital_id", "period_id", "parent_id", "code", "name", "department_type", "manager", "description", "created_at", "updated_at") VALUES ('410e0a71-468d-4c0f-872b-f57a2efebb4c', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', NULL, 'D002', '외과', 'direct', NULL, NULL, '2025-08-05 01:33:35.714316', '2025-08-05 01:33:35.714316') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Load (0.1ms)[0m  [1m[34mSELECT "departments".* FROM "departments" WHERE "departments"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "departments"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "departments"."code" = 'D003' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Exists? (3.0ms)[0m  [1m[34mSELECT 1 AS one FROM "departments" WHERE "departments"."code" = 'D003' AND "departments"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "departments"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Create (0.1ms)[0m  [1m[32mINSERT INTO "departments" ("id", "hospital_id", "period_id", "parent_id", "code", "name", "department_type", "manager", "description", "created_at", "updated_at") VALUES ('33067117-a550-4d8e-8097-7f9568f9fd13', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', NULL, 'D003', '영상의학과', 'direct', NULL, NULL, '2025-08-05 01:33:35.727878', '2025-08-05 01:33:35.727878') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Load (0.1ms)[0m  [1m[34mSELECT "departments".* FROM "departments" WHERE "departments"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "departments"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "departments"."code" = 'D004' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Exists? (3.0ms)[0m  [1m[34mSELECT 1 AS one FROM "departments" WHERE "departments"."code" = 'D004' AND "departments"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "departments"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Create (0.1ms)[0m  [1m[32mINSERT INTO "departments" ("id", "hospital_id", "period_id", "parent_id", "code", "name", "department_type", "manager", "description", "created_at", "updated_at") VALUES ('13e1257c-202b-43d1-aa91-ec1bec7a0ce9', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', NULL, 'D004', '행정부서', 'indirect', NULL, NULL, '2025-08-05 01:33:35.740929', '2025-08-05 01:33:35.740929') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Load (0.1ms)[0m  [1m[34mSELECT "departments".* FROM "departments" WHERE "departments"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "departments"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "departments"."code" = 'D005' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Exists? (3.3ms)[0m  [1m[34mSELECT 1 AS one FROM "departments" WHERE "departments"."code" = 'D005' AND "departments"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "departments"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mDepartment Create (0.1ms)[0m  [1m[32mINSERT INTO "departments" ("id", "hospital_id", "period_id", "parent_id", "code", "name", "department_type", "manager", "description", "created_at", "updated_at") VALUES ('4b7a4d5c-77c3-4a25-814b-6faea989bf86', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', NULL, 'D005', '시설관리부', 'indirect', NULL, NULL, '2025-08-05 01:33:35.758935', '2025-08-05 01:33:35.758935') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Load (0.1ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "accounts"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "accounts"."code" = '6110' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."code" = '6110' AND "accounts"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "accounts"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Create (0.1ms)[0m  [1m[32mINSERT INTO "accounts" ("id", "hospital_id", "period_id", "code", "name", "category", "is_direct", "description", "created_at", "updated_at") VALUES ('7e4e5dd9-bc29-4b35-82b1-d9c67a1942b0', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', '6110', '급여', 'salary', 0, NULL, '2025-08-05 01:33:35.783960', '2025-08-05 01:33:35.783960') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Load (0.1ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "accounts"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "accounts"."code" = '6120' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Exists? (3.7ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."code" = '6120' AND "accounts"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "accounts"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Create (0.1ms)[0m  [1m[32mINSERT INTO "accounts" ("id", "hospital_id", "period_id", "code", "name", "category", "is_direct", "description", "created_at", "updated_at") VALUES ('28f27690-d0d9-4433-bc41-087a51ef70a7', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', '6120', '상여금', 'salary', 0, NULL, '2025-08-05 01:33:35.798748', '2025-08-05 01:33:35.798748') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "accounts"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "accounts"."code" = '6210' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Exists? (2.9ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."code" = '6210' AND "accounts"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "accounts"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Create (0.1ms)[0m  [1m[32mINSERT INTO "accounts" ("id", "hospital_id", "period_id", "code", "name", "category", "is_direct", "description", "created_at", "updated_at") VALUES ('bed93a8c-5859-47ae-a1ec-aa3097107f5b', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', '6210', '의료재료비', 'material', 1, NULL, '2025-08-05 01:33:35.813757', '2025-08-05 01:33:35.813757') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Load (0.1ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "accounts"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "accounts"."code" = '6220' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Exists? (4.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."code" = '6220' AND "accounts"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "accounts"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Create (0.1ms)[0m  [1m[32mINSERT INTO "accounts" ("id", "hospital_id", "period_id", "code", "name", "category", "is_direct", "description", "created_at", "updated_at") VALUES ('ed5a8400-a1c3-4fa9-b7e4-a5a713bea03b', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', '6220', '의약품비', 'material', 1, NULL, '2025-08-05 01:33:35.828551', '2025-08-05 01:33:35.828551') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Load (0.1ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "accounts"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "accounts"."code" = '6310' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Exists? (2.9ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."code" = '6310' AND "accounts"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "accounts"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Create (0.1ms)[0m  [1m[32mINSERT INTO "accounts" ("id", "hospital_id", "period_id", "code", "name", "category", "is_direct", "description", "created_at", "updated_at") VALUES ('f8c7f463-2133-49f0-a789-3ce084e3d28c', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', '6310', '전기료', 'expense', 0, NULL, '2025-08-05 01:33:35.845988', '2025-08-05 01:33:35.845988') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Load (0.1ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "accounts"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "accounts"."code" = '6320' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Exists? (3.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."code" = '6320' AND "accounts"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "accounts"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mAccount Create (0.1ms)[0m  [1m[32mINSERT INTO "accounts" ("id", "hospital_id", "period_id", "code", "name", "category", "is_direct", "description", "created_at", "updated_at") VALUES ('6e151d68-ee3c-437e-9aee-09b1f6ba9e27', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', '6320', '임차료', 'expense', 0, NULL, '2025-08-05 01:33:35.860439', '2025-08-05 01:33:35.860439') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Load (0.1ms)[0m  [1m[34mSELECT "activities".* FROM "activities" WHERE "activities"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "activities"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "activities"."code" = 'ACT001' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "activities" WHERE "activities"."code" = 'ACT001' AND "activities"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "activities"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Create (0.1ms)[0m  [1m[32mINSERT INTO "activities" ("id", "hospital_id", "period_id", "department_id", "code", "name", "category", "description", "created_at", "updated_at") VALUES ('3ded638a-4571-4747-991a-9683b887295a', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', NULL, 'ACT001', '외래진료', '의료', NULL, '2025-08-05 01:33:35.888777', '2025-08-05 01:33:35.888777') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Load (0.1ms)[0m  [1m[34mSELECT "activities".* FROM "activities" WHERE "activities"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "activities"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "activities"."code" = 'ACT002' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Exists? (3.0ms)[0m  [1m[34mSELECT 1 AS one FROM "activities" WHERE "activities"."code" = 'ACT002' AND "activities"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "activities"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Create (0.1ms)[0m  [1m[32mINSERT INTO "activities" ("id", "hospital_id", "period_id", "department_id", "code", "name", "category", "description", "created_at", "updated_at") VALUES ('806f37c5-abd1-4c60-b42b-34430d4087bc', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', NULL, 'ACT002', '입원진료', '의료', NULL, '2025-08-05 01:33:35.902518', '2025-08-05 01:33:35.902518') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Load (0.1ms)[0m  [1m[34mSELECT "activities".* FROM "activities" WHERE "activities"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "activities"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "activities"."code" = 'ACT003' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Exists? (3.4ms)[0m  [1m[34mSELECT 1 AS one FROM "activities" WHERE "activities"."code" = 'ACT003' AND "activities"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "activities"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Create (0.2ms)[0m  [1m[32mINSERT INTO "activities" ("id", "hospital_id", "period_id", "department_id", "code", "name", "category", "description", "created_at", "updated_at") VALUES ('567882b9-799d-41b8-a168-95d366e7dc25', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', NULL, 'ACT003', '수술', '의료', NULL, '2025-08-05 01:33:35.920497', '2025-08-05 01:33:35.920497') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Load (0.2ms)[0m  [1m[34mSELECT "activities".* FROM "activities" WHERE "activities"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "activities"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "activities"."code" = 'ACT004' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Exists? (3.4ms)[0m  [1m[34mSELECT 1 AS one FROM "activities" WHERE "activities"."code" = 'ACT004' AND "activities"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "activities"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Create (0.1ms)[0m  [1m[32mINSERT INTO "activities" ("id", "hospital_id", "period_id", "department_id", "code", "name", "category", "description", "created_at", "updated_at") VALUES ('d68b0b15-d714-4aac-b33d-b41e6bdd8411', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', NULL, 'ACT004', '영상검사', '의료', NULL, '2025-08-05 01:33:35.938870', '2025-08-05 01:33:35.938870') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Load (0.1ms)[0m  [1m[34mSELECT "activities".* FROM "activities" WHERE "activities"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "activities"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' AND "activities"."code" = 'ACT005' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Exists? (3.6ms)[0m  [1m[34mSELECT 1 AS one FROM "activities" WHERE "activities"."code" = 'ACT005' AND "activities"."hospital_id" = '67ea0003-b267-43de-bf2d-7a017e4f7d42' AND "activities"."period_id" = 'ad036f4d-da64-44cf-aa3a-f7f67618271b' LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActivity Create (0.1ms)[0m  [1m[32mINSERT INTO "activities" ("id", "hospital_id", "period_id", "department_id", "code", "name", "category", "description", "created_at", "updated_at") VALUES ('24229dff-ec1d-4074-bfe8-ccea1df420ef', '67ea0003-b267-43de-bf2d-7a017e4f7d42', 'ad036f4d-da64-44cf-aa3a-f7f67618271b', NULL, 'ACT005', '행정업무', '관리', NULL, '2025-08-05 01:33:35.954823', '2025-08-05 01:33:35.954823') RETURNING "id" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+Migrating to AddCostFieldsToActivities (20250805020228)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (3.3ms)[0m  [1m[35mALTER TABLE "activities" ADD "allocated_cost" decimal(15,2) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mALTER TABLE "activities" ADD "employee_cost" decimal(15,2) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mALTER TABLE "activities" ADD "total_cost" decimal(15,2) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mALTER TABLE "activities" ADD "total_fte" decimal(8,4) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mALTER TABLE "activities" ADD "total_hours" decimal(10,2) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mALTER TABLE "activities" ADD "average_hourly_rate" decimal(10,2) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mALTER TABLE "activities" ADD "unit_cost" decimal(10,4) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805020228') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (50.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+Migrating to AddCostFieldsToProcesses (20250805020301)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (3.0ms)[0m  [1m[35mALTER TABLE "processes" ADD "allocated_cost" decimal(15,2) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+Migrating to AddCostFieldsToProcesses (20250805020301)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.4ms)[0m  [1m[35mALTER TABLE "processes" ADD "allocated_cost" decimal(15,2) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+Migrating to CreateBusinessProcesses (20250805021529)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.9ms)[0m  [1m[35mCREATE TABLE "processes" ("id" uuid NOT NULL PRIMARY KEY, "code" varchar, "name" varchar, "category" varchar, "description" text, "is_billable" boolean, "hospital_id" uuid NOT NULL, "period_id" uuid NOT NULL, "activity_id" uuid, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_244a8e2971"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+, CONSTRAINT "fk_rails_fac0281b80"
+FOREIGN KEY ("period_id")
+  REFERENCES "periods" ("id")
+, CONSTRAINT "fk_rails_ce45959896"
+FOREIGN KEY ("activity_id")
+  REFERENCES "activities" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_processes_on_hospital_id" ON "processes" ("hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_processes_on_period_id" ON "processes" ("period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_processes_on_activity_id" ON "processes" ("activity_id") /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805021529') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (51.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+Migrating to CreateRevenueCodes (20250805021556)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.1ms)[0m  [1m[35mCREATE TABLE "revenue_codes" ("id" uuid NOT NULL PRIMARY KEY, "code" varchar, "name" varchar, "category" varchar, "price" decimal, "description" text, "is_active" boolean, "hospital_id" uuid NOT NULL, "period_id" uuid NOT NULL, "process_id" uuid NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_64f53073bc"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+, CONSTRAINT "fk_rails_bea0126315"
+FOREIGN KEY ("period_id")
+  REFERENCES "periods" ("id")
+, CONSTRAINT "fk_rails_befa1e55f6"
+FOREIGN KEY ("process_id")
+  REFERENCES "processes" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_revenue_codes_on_hospital_id" ON "revenue_codes" ("hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_revenue_codes_on_period_id" ON "revenue_codes" ("period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_revenue_codes_on_process_id" ON "revenue_codes" ("process_id") /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805021556') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (52.6ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+Migrating to CreateDrivers (20250805021712)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.2ms)[0m  [1m[35mCREATE TABLE "drivers" ("id" uuid NOT NULL PRIMARY KEY, "code" varchar, "name" varchar, "driver_type" varchar, "category" varchar, "unit" varchar, "description" text, "is_active" boolean, "hospital_id" uuid NOT NULL, "period_id" uuid NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_9c287cb89b"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+, CONSTRAINT "fk_rails_a525fd40df"
+FOREIGN KEY ("period_id")
+  REFERENCES "periods" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_drivers_on_hospital_id" ON "drivers" ("hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_drivers_on_period_id" ON "drivers" ("period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805021712') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (56.8ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+Migrating to CreateEmployees (20250805021732)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.7ms)[0m  [1m[35mCREATE TABLE "employees" ("id" uuid NOT NULL PRIMARY KEY, "employee_id" varchar, "name" varchar, "email" varchar, "position" varchar, "hourly_rate" decimal, "annual_salary" decimal, "fte" decimal, "is_active" boolean, "hospital_id" uuid NOT NULL, "period_id" uuid NOT NULL, "department_id" uuid NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_ae87569261"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+, CONSTRAINT "fk_rails_2aacd9236c"
+FOREIGN KEY ("period_id")
+  REFERENCES "periods" ("id")
+, CONSTRAINT "fk_rails_0025f65a97"
+FOREIGN KEY ("department_id")
+  REFERENCES "departments" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_employees_on_hospital_id" ON "employees" ("hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_employees_on_period_id" ON "employees" ("period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_employees_on_department_id" ON "employees" ("department_id") /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805021732') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (52.4ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+Migrating to CreateWorkRatios (20250805021827)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.2ms)[0m  [1m[35mCREATE TABLE "work_ratios" ("id" uuid NOT NULL PRIMARY KEY, "ratio" decimal, "hours_per_period" decimal, "hospital_id" uuid NOT NULL, "period_id" uuid NOT NULL, "employee_id" uuid NOT NULL, "activity_id" uuid NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_0c35039c57"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+, CONSTRAINT "fk_rails_15198889c3"
+FOREIGN KEY ("period_id")
+  REFERENCES "periods" ("id")
+, CONSTRAINT "fk_rails_635f0adc99"
+FOREIGN KEY ("employee_id")
+  REFERENCES "employees" ("id")
+, CONSTRAINT "fk_rails_90e2a54c7e"
+FOREIGN KEY ("activity_id")
+  REFERENCES "activities" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_work_ratios_on_hospital_id" ON "work_ratios" ("hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_work_ratios_on_period_id" ON "work_ratios" ("period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_work_ratios_on_employee_id" ON "work_ratios" ("employee_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_work_ratios_on_activity_id" ON "work_ratios" ("activity_id") /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805021827') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (58.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+Migrating to AddCostFieldsToProcesses (20250805020301)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.6ms)[0m  [1m[35mALTER TABLE "processes" ADD "allocated_cost" decimal(15,2) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "processes" ADD "total_cost" decimal(15,2) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "processes" ADD "unit_cost" decimal(10,4) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "processes" ADD "profit_margin" decimal(8,4) DEFAULT 0.0 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805020301') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (47.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+Migrating to AddCalculationStatusToPeriods (20250805020403)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.3ms)[0m  [1m[35mALTER TABLE "periods" ADD "calculation_status" varchar DEFAULT 'pending' /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "periods" ADD "last_calculated_at" datetime(6) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_periods_on_calculation_status" ON "periods" ("calculation_status") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_periods_on_last_calculated_at" ON "periods" ("last_calculated_at") /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805020403') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+Migrating to CreateActivityProcessMappings (20250805023040)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.7ms)[0m  [1m[35mCREATE TABLE "activity_process_mappings" ("id" uuid NOT NULL PRIMARY KEY, "rate" decimal(10,4) DEFAULT 0.0, "hospital_id" uuid NOT NULL, "period_id" uuid NOT NULL, "activity_id" uuid NOT NULL, "process_id" uuid NOT NULL, "driver_id" uuid, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_2ee2fbe057"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+, CONSTRAINT "fk_rails_6a0192d59a"
+FOREIGN KEY ("period_id")
+  REFERENCES "periods" ("id")
+, CONSTRAINT "fk_rails_e79e40503f"
+FOREIGN KEY ("activity_id")
+  REFERENCES "activities" ("id")
+, CONSTRAINT "fk_rails_d1683b4b89"
+FOREIGN KEY ("process_id")
+  REFERENCES "processes" ("id")
+, CONSTRAINT "fk_rails_24180ea0dd"
+FOREIGN KEY ("driver_id")
+  REFERENCES "drivers" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activity_process_mappings_on_hospital_id" ON "activity_process_mappings" ("hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activity_process_mappings_on_period_id" ON "activity_process_mappings" ("period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activity_process_mappings_on_activity_id" ON "activity_process_mappings" ("activity_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activity_process_mappings_on_process_id" ON "activity_process_mappings" ("process_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_activity_process_mappings_on_driver_id" ON "activity_process_mappings" ("driver_id") /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805023040') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (55.4ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
+Migrating to CreateJobStatuses (20250805024439)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.1ms)[0m  [1m[35mCREATE TABLE "job_statuses" ("id" uuid NOT NULL PRIMARY KEY, "job_id" varchar NOT NULL, "job_type" varchar NOT NULL, "status" varchar DEFAULT 'pending' NOT NULL, "progress_message" text, "error_message" text, "result" text, "total_steps" integer, "completed_steps" integer, "started_at" datetime(6), "completed_at" datetime(6), "hospital_id" uuid NOT NULL, "period_id" uuid, "user_id" uuid, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_5d773e4752"
+FOREIGN KEY ("hospital_id")
+  REFERENCES "hospitals" ("id")
+, CONSTRAINT "fk_rails_b72ae95bdf"
+FOREIGN KEY ("period_id")
+  REFERENCES "periods" ("id")
+, CONSTRAINT "fk_rails_872c6a8c95"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_job_statuses_on_hospital_id" ON "job_statuses" ("hospital_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_job_statuses_on_period_id" ON "job_statuses" ("period_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_job_statuses_on_user_id" ON "job_statuses" ("user_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_job_statuses_on_job_id" ON "job_statuses" ("job_id") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_job_statuses_on_hospital_id_and_job_type" ON "job_statuses" ("hospital_id", "job_type") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_job_statuses_on_status" ON "job_statuses" ("status") /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_job_statuses_on_created_at" ON "job_statuses" ("created_at") /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805024439') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (53.4ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+Migrating to AddCalculationFieldsToPeriods (20250805024711)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[35m (2.4ms)[0m  [1m[35mALTER TABLE "periods" ADD "calculation_started_at" datetime(6) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mALTER TABLE "periods" ADD "calculation_completed_at" datetime(6) /*application='AbcCostingBackend'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mALTER TABLE "periods" ADD "calculation_error" text /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250805024711') RETURNING "version" /*application='AbcCostingBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='AbcCostingBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='AbcCostingBackend'*/[0m
