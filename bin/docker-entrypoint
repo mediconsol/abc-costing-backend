@@ -2,12 +2,20 @@
 
 # Enable jemalloc for reduced memory usage and latency.
 if [ -z "${LD_PRELOAD+x}" ]; then
-    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
+    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit 2>/dev/null)
     export LD_PRELOAD
 fi
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+# Railway-specific database setup
+if [ -n "$DATABASE_URL" ] && [ "$RAILS_ENV" = "production" ]; then
+  echo "🚂 Railway: Setting up database..."
+  bundle exec rails db:create 2>/dev/null || echo "Database already exists"
+  bundle exec rails db:migrate 2>/dev/null || echo "Migration completed"
+  echo "✅ Database setup complete"
+fi
+
+# If running the rails server then prepare database (development/test)
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ] && [ "$RAILS_ENV" != "production" ]; then
   ./bin/rails db:prepare
 fi
 

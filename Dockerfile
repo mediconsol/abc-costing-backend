@@ -35,7 +35,8 @@ RUN apt-get update -qq && \
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
+RUN bundle config set frozen false && \
+    bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
@@ -68,4 +69,4 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Railway uses PORT environment variable
 EXPOSE $PORT
-CMD ["./bin/thrust", "./bin/rails", "server"]
+CMD ["./bin/rails", "server", "-p", "$PORT", "-b", "0.0.0.0"]
