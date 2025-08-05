@@ -167,14 +167,8 @@ Rails.application.configure do
 
   # ABC-specific performance optimizations
   config.after_initialize do
-    # Configure connection pool size based on expected load
-    if defined?(ActiveRecord)
-      # Increase pool size for ABC calculations
-      ActiveRecord::Base.configurations.configs_for(env_name: Rails.env).each do |config|
-        config.configuration_hash[:pool] = ENV.fetch('DB_POOL_SIZE', 25).to_i
-        config.configuration_hash[:checkout_timeout] = 30
-      end
-    end
+    # Note: Database pool size is configured in database.yml
+    # Connection pool optimization happens at the database adapter level
     
     # Configure Sidekiq for ABC workloads
     if defined?(Sidekiq) && Rails.env.production?
