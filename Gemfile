@@ -39,7 +39,7 @@ gem "rack-cors"
 
 # Authentication and Authorization
 gem "devise"
-gem "devise-jwt"
+# gem "devise-jwt"  # Railway 배포를 위해 임시 비활성화
 gem "pundit"
 
 # Background Jobs
