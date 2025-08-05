@@ -90,7 +90,10 @@ Rails.application.routes.draw do
       post 'auth/login', to: 'auth#login'
       post 'auth/signup', to: 'auth#signup'
       delete 'auth/logout', to: 'auth#logout'
-      get 'auth/me', to: 'auth#me'
+      get 'auth/me', to:'auth#me'
+      
+      # 초기 설정 (임시)
+      post 'setup/admin', to: 'setup#create_admin'
     end
   end
   
