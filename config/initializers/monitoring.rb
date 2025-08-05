@@ -186,30 +186,30 @@ Rails.application.configure do
     end
   end
 
-  # Custom metrics collection
+  # Custom metrics collection - Disabled until all tables are migrated
   config.after_initialize do
     if Rails.env.production?
-      # Collect ABC-specific metrics
+      # Collect ABC-specific metrics (disabled until JobStatus table exists)
       Thread.new do
         loop do
           begin
-            hospital_count = Hospital.active.count
-            active_calculations = JobStatus.where(status: ['pending', 'in_progress'], job_type: 'abc_calculation').count
-            active_exports = JobStatus.where(status: ['pending', 'in_progress'], job_type: 'report_export').count
+            # Only collect basic metrics that don't depend on job_statuses table
+            hospital_count = Hospital.count rescue 0
+            user_count = User.count rescue 0
             
             Rails.logger.info(
-              "ABC Metrics - Hospitals: #{hospital_count}, " \
-              "Active Calculations: #{active_calculations}, " \
-              "Active Exports: #{active_exports}"
+              "ABC Basic Metrics - Hospitals: #{hospital_count}, Users: #{user_count}"
             )
             
-            # Custom business metrics
-            today_calculations = JobStatus.where(
-              job_type: 'abc_calculation',
-              created_at: Date.current.beginning_of_day..Date.current.end_of_day
-            ).count
-            
-            Rails.logger.info("Daily ABC Calculations: #{today_calculations}")
+            # More detailed metrics will be enabled after full migration
+            if defined?(JobStatus) && JobStatus.table_exists?
+              active_calculations = JobStatus.where(status: ['pending', 'in_progress'], job_type: 'abc_calculation').count
+              active_exports = JobStatus.where(status: ['pending', 'in_progress'], job_type: 'report_export').count
+              
+              Rails.logger.info(
+                "ABC Job Metrics - Active Calculations: #{active_calculations}, Active Exports: #{active_exports}"
+              )
+            end
             
             sleep 600 # Every 10 minutes
           rescue => e
